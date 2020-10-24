@@ -10,5 +10,7 @@ project/metals.sbt
 .metals/
 .vscode/
 .bloop/
+.bsp
+*.iml
 *.class
 *.log
