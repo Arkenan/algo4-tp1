@@ -7,19 +7,19 @@ import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.implicits.javatime._
 import cats.effect.IO
-
 import fs2.Stream
 import fs2.io
+
 import scala.concurrent.ExecutionContext
 import models.DataSetRow
 import cats.effect._
+import doobie.util.fragment
 
 object Run extends App {
     // Puts a dataset row in the database specified by a transactor.
-    def putInDb(transactor: Transactor.Aux[IO, Unit], dr: DataSetRow) : Unit = {
-        val query = sql"INSERT INTO fptp.dataset(id, date, open, high, low, last, close, dif, curr, o_vol, o_dif, op_vol, unit, dollar_bn, dollar_itau, w_diff, hash_code) VALUES (${dr.id}, ${dr.date}, ${dr.open}, ${dr.high}, ${dr.low}, ${dr.last}, ${dr.close}, ${dr.diff}, ${dr.curr}, ${dr.OVol}, ${dr.Odiff}, ${dr.OpVol}, ${dr.unit}, ${dr.dollarBN}, ${dr.dollarItau}, ${dr.wDiff}, ${275})"
-        val conn = query.update.run
-        conn.transact(transactor).unsafeRunSync()
+    def putInDb(transactor: Transactor.Aux[IO, Unit], dr: DataSetRow) : IO[Either[Throwable, Int]] = {
+        val query : fragment.Fragment = sql"INSERT INTO fptp.dataset(id, date, open, high, low, last, close, dif, curr, o_vol, o_dif, op_vol, unit, dollar_bn, dollar_itau, w_diff, hash_code) VALUES (${dr.id}, ${dr.date}, ${dr.open}, ${dr.high}, ${dr.low}, ${dr.last}, ${dr.close}, ${dr.diff}, ${dr.curr}, ${dr.OVol}, ${dr.Odiff}, ${dr.OpVol}, ${dr.unit}, ${dr.dollarBN}, ${dr.dollarItau}, ${dr.wDiff}, ${275})"
+        query.update.run.transact(transactor).attempt
     }
 
     // Util function to create dummies for dataset rows with a specified ID.
@@ -41,9 +41,8 @@ object Run extends App {
     val put = (datasetRow: DataSetRow) => putInDb(transactor, datasetRow)
 
     // Stream that writes dummy dataset rows to the DB.
-    // TODO: make this more FP-pure (put can throw exceptions if there's no connection or ids are repeated).
-    Stream(datasetDummy(50), datasetDummy(51), datasetDummy(52))
-      .evalTap((dr : DataSetRow) => IO(put(dr)))
+    Stream(datasetDummy(100), datasetDummy(101), datasetDummy(102))
+      .evalMap(put)
       .compile
       .drain
       .unsafeRunSync()

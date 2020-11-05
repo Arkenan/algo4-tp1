@@ -14,3 +14,4 @@ project/metals.sbt
 *.iml
 *.class
 *.log
+*.csv
