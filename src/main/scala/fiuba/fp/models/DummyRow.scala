@@ -1,5 +1,7 @@
 package fiuba.fp.models
 
+import fiuba.fp.Validator
+
 case class DummyRow (
                  id: String,
                  date: String,
@@ -18,3 +20,4 @@ case class DummyRow (
                  dollarItau: String,
                  wDiff: String
                )
+
