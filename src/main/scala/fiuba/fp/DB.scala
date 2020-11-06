@@ -43,7 +43,10 @@ case class DB(transactor : Transactor.Aux[IO, Unit]) {
   }
 
   // Partially evaluated put function with a fixed transactor. Ready to add as part of a stream pipeline.
-  def putInDb(datasetRow: DataSetRow) : IO[Either[Throwable, Int]] = {
-    putInDb(transactor, datasetRow)
+  def putInDb(datasetRow: Option[DataSetRow]) : IO[Either[Throwable, Int]] = {
+    datasetRow match {
+      case Some(dataSetRow) => putInDb(transactor, dataSetRow)
+      case None => IO(Left(new IllegalArgumentException("error")))
+    }
   }
 }

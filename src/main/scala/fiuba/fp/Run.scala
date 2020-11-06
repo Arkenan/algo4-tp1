@@ -10,7 +10,7 @@ import fs2.{Stream, io, text}
 
 import scala.concurrent.ExecutionContext
 import cats.effect._
-
+import scala.io.Source
 object Run extends App {
 
     if (args.length == 0)
@@ -28,19 +28,26 @@ object Run extends App {
 
     val db = DB(transactor)
 
-    val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
-        io.file
-          .readAll[IO](Paths.get(filename), blocker, 4096)
-          .through(text.utf8Decode)
-          .through(text.lines)
-          .map(line => DataSetRow.convertToDataSetRow(line))
-          .map(dr => dr.toString)
-          .intersperse("\n")
-          .through(text.utf8Encode)
-          .through(io.file.writeAll(Paths.get("output.txt"), blocker))
+        val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
+            io.file
+              .readAll[IO](Paths.get(filename), blocker, 4096)
+              .through(text.utf8Decode)
+              .through(text.lines)
+              .map(DataSetRow.convertToDataSetRow)
+              .map(r => db.putInDb(r))
+        }
 
-    }
+        stream.compile.drain.unsafeRunSync()
+/*
 
-    stream.compile.drain.unsafeRunSync()
+        val db2 = DB(transactor)
+
+        Source.fromFile(filename)
+          .getLines()
+          .flatMap(DataSetRow.convertToDataSetRow)
+          .map(r => db.putInDb(r))
+    */
+
+
 }
 

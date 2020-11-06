@@ -30,8 +30,7 @@ object DataSetRow {
       val validator = Validator()
       line match {
           case s"${id},${date},${open},${high},${low},${last},${close},${diff},${curr},${oVol},${oDiff},${opVol},${unit},${dollarBN},${dollarItau},${wDiff}" => {
-                validator.validate(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol,
-                unit, dollarBN, dollarItau, wDiff)
+                validator.validate(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol, unit, dollarBN, dollarItau, wDiff)
           }
           case _ =>  None
     }
