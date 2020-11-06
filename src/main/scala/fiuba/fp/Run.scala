@@ -17,7 +17,6 @@ object Run extends App {
         print("File path is needed")
     val filename = args(0)
 
-
     implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
     // Transactor to connect to our DB.
@@ -28,20 +27,19 @@ object Run extends App {
 
     val db = DB(transactor)
 
-        val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
-            io.file
-              .readAll[IO](Paths.get(filename), blocker, 4096)
-              .through(text.utf8Decode)
-              .through(text.lines)
-              .map(DataSetRow.convertToDataSetRow)
-              .evalMap(r => db.putInDb(r))
-              .map(db.toOutputLine)
-              .intersperse("\n")
-              .through(text.utf8Encode)
-              .through(io.file.writeAll(
-                Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))        }
+    val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
+        io.file
+          .readAll[IO](Paths.get(filename), blocker, 4096)
+          .through(text.utf8Decode)
+          .through(text.lines)
+          .map(DataSetRow.convertToDataSetRow)
+          .evalMap(r => db.putInDb(r))
+          .map(db.toOutputLine)
+          .through(text.utf8Encode)
+          .through(io.file.writeAll(
+            Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))
+    }
 
-        stream.compile.drain.unsafeRunSync()
-
+    stream.compile.drain.unsafeRunSync()
 }
 

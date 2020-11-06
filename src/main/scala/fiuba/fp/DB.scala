@@ -20,9 +20,9 @@ import fiuba.fp.models.DataSetRow
 /** Database interaction for datasets using a specified transactor. */
 case class DB(transactor: Transactor.Aux[IO, Unit]) {
   /** Puts a dataset row in the database. */
-  def putInDb(dr: Option[DataSetRow]): IO[Either[Throwable, Int]] = {
+  def putInDb(dr: Either[Throwable, DataSetRow]): IO[Either[Throwable, Int]] = {
     dr match {
-      case Some(dr) => {
+      case Right(dr) => {
         val query: fragment.Fragment =
           sql"INSERT INTO fptp.dataset" ++
             sql"(id, date, open, high, low, last, close, dif, curr, o_vol, o_dif, op_vol, unit, " ++
@@ -33,9 +33,8 @@ case class DB(transactor: Transactor.Aux[IO, Unit]) {
             sql"${dr.wDiff}, ${dr.hashCode})"
         query.update.run.transact(transactor).attempt
       }
-      case None => IO(Left(new IllegalArgumentException()))
+      case Left(throwable: Throwable) => IO(Left(throwable))
     }
-
   }
 
   /** Turns the result of an insert statement into a string that can be printed into a file. */

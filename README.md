@@ -16,13 +16,14 @@ Para ejecutar el código debe tenerse instalado [SBT](https://www.scala-sbt.org/
 
 ### Ejecución del programa
 
-Para ejecutar la extracción de datos debe ejecutarse:
+Para ejecutar la extracción de datos debe ejecutarse `sbt` y luego, dentro de la consola:
 
 ```shell
-sbt run "<archivo.csv>"
+run "<archivo.csv>"
 ```
 
-Donde archivo.csv será el archivo de entrada.
+Donde archivo.csv será el archivo de entrada, por ejemplo, `train.csv`, para ejecutarlo sobre 
+el archivo provisto por la materia.
 
 ### Output
 

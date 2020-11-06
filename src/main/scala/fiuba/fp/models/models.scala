@@ -26,13 +26,13 @@ case class DataSetRow(
                      )
 
 object DataSetRow {
-   def convertToDataSetRow(line: String): Option[DataSetRow] ={
+   def convertToDataSetRow(line: String): Either[Throwable, DataSetRow] ={
       val validator = Validator
       line match {
           case s"${id},${date},${open},${high},${low},${last},${close},${diff},${curr},${oVol},${oDiff},${opVol},${unit},${dollarBN},${dollarItau},${wDiff}" => {
                 validator.validate(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol, unit, dollarBN, dollarItau, wDiff)
           }
-          case _ =>  None
+          case _ => Left(new IllegalArgumentException("No hay campos suficientes para parsear la fila: " + line))
     }
   }
 }

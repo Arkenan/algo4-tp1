@@ -10,8 +10,8 @@ import scala.util.Try
 
 object Validator {
 
-  def validate(id: String, date: String, open: String, high: String, low: String, last: String, close: String, dif: String, curr: String, OVol: String, ODif: String, opVol: String, unit: String, dollarBN: String, dollarItau: String, wDiff: String) : Option[DataSetRow] = {
-    Try(DataSetRow(id.toInt, dateValidator(date), tryToDouble(open), tryToDouble(high), tryToDouble(low), last.toDouble, close.toDouble, dif.toDouble, stringSizeValidator(curr, 1), tryToInt(OVol), tryToInt(ODif), tryToInt(opVol), stringSizeValidator(unit, 4), dollarBN.toDouble, dollarItau.toDouble, wDiff.toDouble)).toOption
+  def validate(id: String, date: String, open: String, high: String, low: String, last: String, close: String, dif: String, curr: String, OVol: String, ODif: String, opVol: String, unit: String, dollarBN: String, dollarItau: String, wDiff: String) : Either[Throwable, DataSetRow] = {
+    Try(DataSetRow(id.toInt, dateValidator(date), tryToDouble(open), tryToDouble(high), tryToDouble(low), last.toDouble, close.toDouble, dif.toDouble, stringSizeValidator(curr, 1), tryToInt(OVol), tryToInt(ODif), tryToInt(opVol), stringSizeValidator(unit, 4), dollarBN.toDouble, dollarItau.toDouble, wDiff.toDouble)).toEither
   }
 
   def stringSizeValidator(s: String, i: Int) : String = {
