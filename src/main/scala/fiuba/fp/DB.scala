@@ -22,8 +22,8 @@ case class DB(transactor : Transactor.Aux[IO, Unit]) {
   // TODO: make a better log (e.g. Maybe add CSV line, line content, only show errors, etc).
   def toOutputLine(e: Either[Throwable, Int]) : String = {
     e match {
-      case(Left(th)) => "Error inserting row: " + th.getMessage
-      case(Right(am)) => "Successful row."
+      case(Left(th)) => f"Error inserting row: ${th.getMessage}\n"
+      case(Right(am)) => ""
     }
   }
 

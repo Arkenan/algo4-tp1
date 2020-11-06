@@ -25,7 +25,6 @@ object Run extends App {
         Stream(db.datasetDummy(1), db.datasetDummy(2), db.datasetDummy(3))
           .evalMap(db.putInDb)
           .map(db.toOutputLine)
-          .intersperse("\n")
           .through(text.utf8Encode)
           .through(io.file.writeAll(Paths.get("output.txt"), blocker))
     }
