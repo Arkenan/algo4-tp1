@@ -1,7 +1,7 @@
 # algo4-tp1
 
 Primer trabajo práctico de la materia Algoritmos 4. El desarrollo consiste en un programa en Scala para obtener datos
-de un archivo CSV, introducir los validos en una base de datos y loguear los que no lo son.
+de un archivo CSV, introducir los válidos en una base de datos y loguear los que no lo son.
 
 Se utilizan las tecnologias:
 
@@ -26,10 +26,10 @@ Donde archivo.csv sera el archivo de entrada.
 
 ### Output
 
-Luego de ejecutase el pipeline, habrá dos efectos sobre el exterior:
+Luego de ejecutarse el pipeline, habrá dos efectos sobre el exterior:
 
 - Cada fila que sea válida será insertada en la base de datos.
-- El archivo `log.txt` tendrá feedback sobre las filas que no pudieron ser insertadas correctamente en la base de datos.
+- El archivo `log.txt` tendrá feedback sobre las filas que no pudieron ser insertadas correctamente.
 
 ### Tests
 
@@ -51,6 +51,7 @@ src/
 --- models/models.scala # Modelo en Scala de un DataSetRow
 --- Run.scala # Archivo principal de ejecución, con la descripción del pipeline.
 --- DB.scala # Archivo con utilidades para insertar DataSetRows a la BDD.
+--- Validator.scala # Archivo con utilidades de validación.
 - test/ # carpeta con los tests unitarios para la validación. 
 ```
 
@@ -75,7 +76,7 @@ redireccionados y los escribirá en un archivo "log.txt" para facilitar el proce
 
 ### IO
 
-La etapa de inserción en la base de datos tiene efectos de IO, lo cual puede observarse en que `attempt`) devuelve
+La etapa de inserción en la base de datos tiene efectos de IO, lo cual puede observarse en que `attempt` devuelve
 un `IO[Either[Throwable, Int]]`. Por este motivo, usamos `evalMap`, que evalúa los efectos de IO y cambia el tipo de
 stream a `Stream[IO, Either[Throwable, Int]]`. Esto se explica en que `evalMap` es un alias para
 
@@ -84,13 +85,13 @@ def evalMap = flatMap(o => Stream.eval(f(o)))
 ```
 
 Las únicas otras etapas donde se maneja input/output son la primera y la última, que leen o escriben un stream de 
-bytes en un archivo, pero estas son manejadas con `through` funciones provistas por `cats.io`.
+bytes en un archivo, pero estas son manejadas con `through` y funciones provistas por `cats.io`.
 
 ### Validaciones
 
 Las validaciones se efectuaron con la metodología "Do, don't ask". Esto significa que el validador
 intentará construir un `DataSetRow` a partir de una fila, y si cualquier etapa del proceso fallara 
-Simplemente se devolverá un error. Por esto la salida de la etapa de validación es un 
+simplemente se devolverá un error. Por esto la salida de la etapa de validación es un 
 `Either[Throwable, DatasetRow]`.
 
 Podemos destacar los siguientes casos de causas de validación fallida:
@@ -98,7 +99,7 @@ Podemos destacar los siguientes casos de causas de validación fallida:
 - Filas que no tengan los suficientes campos.
 - Filas que tengan vacío algún campo no opcional.
 - Campos enteros o de punto flotante que no son parseables como tales.
-- Campos varInt de longitud mayor a la esperada por la BDD.
+- Campos varInt de longitud mayor a la esperada por la BDD (`curr` y `unit`).
 
 ## Schema
 
