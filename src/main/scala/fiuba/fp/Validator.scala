@@ -2,6 +2,7 @@ package fiuba.fp
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 import fiuba.fp.models.DataSetRow
 
@@ -21,9 +22,8 @@ object Validator {
   }
 
   def dateValidator(s: String): LocalDateTime = {
-
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
-    LocalDateTime.parse(s, formatter)
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH)
+    LocalDateTime.parse(s.replace(".","").toUpperCase, formatter)
   }
 
   def tryToInt(s: String) : Option[Int] = Try(s.toInt).toOption
