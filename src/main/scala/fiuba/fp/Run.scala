@@ -25,7 +25,8 @@ object Run extends App {
           .evalMap(db.putInDb)
           .map(db.toOutputLine)
           .through(text.utf8Encode)
-          .through(io.file.writeAll(Paths.get("output.txt"), blocker, List(StandardOpenOption.TRUNCATE_EXISTING)))
+          .through(io.file.writeAll(
+              Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))
     }
 
     stream.compile.drain.unsafeRunSync()
