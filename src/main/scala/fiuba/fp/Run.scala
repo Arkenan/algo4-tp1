@@ -34,7 +34,11 @@ object Run extends App {
           .through(text.utf8Decode)
           .through(text.lines)
           .map(line => DataSetRow.convertToDataSetRow(line))
-          .map(dr =>print(dr.toString))
+          .map(dr => dr.toString)
+          .intersperse("\n")
+          .through(text.utf8Encode)
+          .through(io.file.writeAll(Paths.get("output.txt"), blocker))
+
     }
 
     stream.compile.drain.unsafeRunSync()
