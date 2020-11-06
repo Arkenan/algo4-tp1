@@ -16,12 +16,12 @@ object Validator {
   def stringSizeValidator(s: String, i: Int) : String = {
     s match {
       case s if(s.length <= i) => s
-      case _ => throw new IllegalArgumentException
+      case _ => throw new IllegalArgumentException("field should have 1 character")
     }
   }
 
   def dateValidator(s: String): LocalDateTime = {
-    
+
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
     LocalDateTime.parse(s, formatter)
   }
