@@ -3,14 +3,14 @@
 Primer trabajo práctico de la materia Algoritmos 4. El desarrollo consiste en un programa en Scala para obtener datos
 de un archivo CSV, introducir los válidos en una base de datos y loguear los que no lo son.
 
-Se utilizan las tecnologias:
+Se utilizan las tecnologías:
 
 - FS2 para el armado de streams.
 - Doobie para los accesos a la BDD.
 
 ## Prerrequisitos
 
-Para ejecutar el código debe tenerse isntalado [SBT](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Linux.html).
+Para ejecutar el código debe tenerse instalado [SBT](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Linux.html).
 
 ## Instrucciones
 
@@ -22,7 +22,7 @@ Para ejecutar la extracción de datos debe ejecutarse:
 sbt run "<archivo.csv>"
 ```
 
-Donde archivo.csv sera el archivo de entrada.
+Donde archivo.csv será el archivo de entrada.
 
 ### Output
 
