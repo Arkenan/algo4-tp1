@@ -1,9 +1,8 @@
 package fiuba.fp
 
-import java.nio.file.Paths
+import java.nio.file.{Paths, StandardOpenOption}
 
 import doobie._
-
 import cats.effect.IO
 import fs2.{Stream, io, text}
 
@@ -25,9 +24,9 @@ object Run extends App {
         Stream(db.datasetDummy(1), db.datasetDummy(2), db.datasetDummy(3))
           .evalMap(db.putInDb)
           .map(db.toOutputLine)
-          .intersperse("\n")
           .through(text.utf8Encode)
-          .through(io.file.writeAll(Paths.get("output.txt"), blocker))
+          .through(io.file.writeAll(
+              Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))
     }
 
     stream.compile.drain.unsafeRunSync()
