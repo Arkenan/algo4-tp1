@@ -1,9 +1,8 @@
 package fiuba.fp
 
-import java.nio.file.Paths
+import java.nio.file.{Paths, StandardOpenOption}
 
 import doobie._
-
 import cats.effect.IO
 import fs2.{Stream, io, text}
 
@@ -26,7 +25,7 @@ object Run extends App {
           .evalMap(db.putInDb)
           .map(db.toOutputLine)
           .through(text.utf8Encode)
-          .through(io.file.writeAll(Paths.get("output.txt"), blocker))
+          .through(io.file.writeAll(Paths.get("output.txt"), blocker, List(StandardOpenOption.TRUNCATE_EXISTING)))
     }
 
     stream.compile.drain.unsafeRunSync()
