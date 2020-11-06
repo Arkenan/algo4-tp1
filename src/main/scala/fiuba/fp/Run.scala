@@ -34,20 +34,13 @@ object Run extends App {
               .through(text.utf8Decode)
               .through(text.lines)
               .map(DataSetRow.convertToDataSetRow)
-              .map(r => db.putInDb(r))
+              .evalMap(r => db.putInDb(r))
+              .map(db.toOutputLine)
+              .intersperse("\n")
+              .through(text.utf8Encode)
+              .through(io.file.writeAll(Paths.get("output.txt"), blocker))
         }
 
         stream.compile.drain.unsafeRunSync()
-/*
-
-        val db2 = DB(transactor)
-
-        Source.fromFile(filename)
-          .getLines()
-          .flatMap(DataSetRow.convertToDataSetRow)
-          .map(r => db.putInDb(r))
-    */
-
-
 }
 
