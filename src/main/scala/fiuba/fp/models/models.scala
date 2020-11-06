@@ -27,14 +27,13 @@ case class DataSetRow(
 
 object DataSetRow {
    def convertToDataSetRow(line: String): Option[DataSetRow] ={
+     val validator = Validator()
     line match {
-          case s"$id, $date, $open, $high, $low ,$last ,$close , $diff , $curr, $OVol, $ODiff ,$OpVol, $unit" +
-               s"$dollarBN, $dollarItau, $wDiff" => {
-               Validator.validate(id, date, open, high, low, last, close, diff, curr, OVol, ODiff,OpVol,
+          case s"$id, $date, $open, $high, $low ,$last ,$close , $diff , $curr, $oVol, $oDiff ,$opVol, $unit, $dollarBN, $dollarItau, $wDiff" => {
+                validator.validate(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol,
                unit, dollarBN, dollarItau, wDiff)
-      }
-      case _ => None
+          }
+          case _ =>  None
     }
   }
 }
-
