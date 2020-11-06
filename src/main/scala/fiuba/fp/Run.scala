@@ -1,64 +1,35 @@
 package fiuba.fp
 
 import java.nio.file.Paths
-import java.time.LocalDateTime
 
 import doobie._
-import doobie.implicits._
-import doobie.implicits.javasql._
-import doobie.implicits.javatime._
+
 import cats.effect.IO
 import fs2.{Stream, io, text}
 
 import scala.concurrent.ExecutionContext
-import models.DataSetRow
 import cats.effect._
-import doobie.util.fragment
 
 object Run extends App {
-    // Puts a dataset row in the database specified by a transactor.
-    def putInDb(transactor: Transactor.Aux[IO, Unit], dr: DataSetRow) : IO[Either[Throwable, Int]] = {
-        val query : fragment.Fragment = sql"INSERT INTO fptp.dataset(id, date, open, high, low, last, close, dif, curr, o_vol, o_dif, op_vol, unit, dollar_bn, dollar_itau, w_diff, hash_code) VALUES (${dr.id}, ${dr.date}, ${dr.open}, ${dr.high}, ${dr.low}, ${dr.last}, ${dr.close}, ${dr.diff}, ${dr.curr}, ${dr.OVol}, ${dr.Odiff}, ${dr.OpVol}, ${dr.unit}, ${dr.dollarBN}, ${dr.dollarItau}, ${dr.wDiff}, ${275})"
-        query.update.run.transact(transactor).attempt
-    }
-
-    // Turns the result of an insert statement into a string that can be printed into a file.
-    // TODO: make a better log (e.g. Maybe add CSV line, line content, only show errors, etc).
-    def toOutputLine(e: Either[Throwable, Int]) : String = {
-         e match {
-            case(Left(th)) => "Error inserting row: " + th.getMessage
-            case(Right(am)) => "Successful row."
-        }
-    }
-
-    // Util function to create dummies for dataset rows with a specified ID.
-    def datasetDummy(id: Integer) = {
-        DataSetRow(id = id, date = LocalDateTime.of(2020, 10, 10, 0, 0),
-            open = Option[Double](700.0), high = Option[Double](200.0), low = Option[Double](150.0),
-            last = 175, close = 3.14, diff = -750.3, curr = "A",
-            OVol = Option[Int](2), Odiff = Option[Int](3), OpVol = Option[Int](0),
-            unit = "US$", dollarBN = 170, dollarItau = 170.2, wDiff = 100000.0)
-    }
-
     implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
+    // Transactor to connect to our DB.
     val transactor = Transactor.fromDriverManager[IO](
         "org.postgresql.Driver",
         "jdbc:postgresql://localhost:5432/fpalgo",
         "fiuba","password")
 
-    // Partially evaluated put function with a fixed transactor. Ready to add as part of a stream pipeline.
-    val put = (datasetRow: DataSetRow) => putInDb(transactor, datasetRow)
+    val db = DB(transactor)
 
-    val ingestor: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
-        Stream(datasetDummy(500), datasetDummy(101), datasetDummy(102))
-          .evalMap(put)
-          .map(toOutputLine)
+    val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
+        Stream(db.datasetDummy(1), db.datasetDummy(2), db.datasetDummy(3))
+          .evalMap(db.putInDb)
+          .map(db.toOutputLine)
           .intersperse("\n")
           .through(text.utf8Encode)
           .through(io.file.writeAll(Paths.get("output.txt"), blocker))
     }
 
-    ingestor.compile.drain.unsafeRunSync()
+    stream.compile.drain.unsafeRunSync()
 }
 
