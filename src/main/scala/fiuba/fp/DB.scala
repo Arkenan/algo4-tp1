@@ -29,7 +29,7 @@ case class DB(transactor: Transactor.Aux[IO, Unit]) {
             sql"dollar_bn, dollar_itau, w_diff, hash_code)" ++
             sql"VALUES" ++
             sql"(${dr.id}, ${dr.date}, ${dr.open}, ${dr.high}, ${dr.low}, ${dr.last}, ${dr.close}, ${dr.diff}," ++
-            sql"${dr.curr}, ${dr.OVol}, ${dr.Odiff}, ${dr.OpVol}, ${dr.unit}, ${dr.dollarBN}, ${dr.dollarItau}, " ++
+            sql"${dr.curr}, ${dr.OVol}, ${dr.ODiff}, ${dr.OpVol}, ${dr.unit}, ${dr.dollarBN}, ${dr.dollarItau}, " ++
             sql"${dr.wDiff}, ${dr.hashCode})"
         query.update.run.transact(transactor).attempt
       }
@@ -54,7 +54,7 @@ case class DB(transactor: Transactor.Aux[IO, Unit]) {
     DataSetRow(id = id, date = LocalDateTime.of(2020, 10, 10, 0, 0),
       open = Option[Double](700.0), high = Option[Double](200.0), low = Option[Double](150.0),
       last = 175, close = 3.14, diff = -750.3, curr = "A",
-      OVol = Option[Int](2), Odiff = Option[Int](3), OpVol = Option[Int](0),
+      OVol = Option[Int](2), ODiff = Option[Int](3), OpVol = Option[Int](0),
       unit = "US$", dollarBN = 170, dollarItau = 170.2, wDiff = 100000.0)
   }
 }
