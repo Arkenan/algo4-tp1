@@ -2,7 +2,7 @@ package fiuba.fp
 
 import models.DataSetRow
 
-import java.nio.file.Paths
+import java.nio.file.{Paths, StandardOpenOption}
 
 import doobie._
 import cats.effect.IO
@@ -38,9 +38,10 @@ object Run extends App {
               .map(db.toOutputLine)
               .intersperse("\n")
               .through(text.utf8Encode)
-              .through(io.file.writeAll(Paths.get("output.txt"), blocker))
-        }
+              .through(io.file.writeAll(
+                Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))        }
 
         stream.compile.drain.unsafeRunSync()
+
 }
 
