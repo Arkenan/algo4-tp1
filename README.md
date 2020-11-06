@@ -98,9 +98,10 @@ simplemente se devolverá un error. Por esto la salida de la etapa de validació
 Podemos destacar los siguientes casos de causas de validación fallida:
 
 - Filas que no tengan los suficientes campos.
-- Filas que tengan vacío algún campo no opcional.
+- Filas que tengan vacío u erroneo algún campo no opcional.
 - Campos enteros o de punto flotante que no son parseables como tales.
-- Campos varInt de longitud mayor a la esperada por la BDD (`curr` y `unit`).
+- Campos de longitud mayor a la esperada por la BDD (`curr` y `unit`).
+- Campo de fecha sin el formato correcto. 
 
 ## Schema
 
