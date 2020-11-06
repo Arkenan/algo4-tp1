@@ -16,3 +16,4 @@ project/metals.sbt
 *.log
 *.csv
 output.txt
+log.txt
