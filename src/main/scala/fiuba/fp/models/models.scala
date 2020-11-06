@@ -14,7 +14,7 @@ case class DataSetRow(
                      // 1 caracter como máximo.
                      curr: String,
                      OVol: Option[Int],
-                     Odiff: Option[Int],
+                     ODiff: Option[Int],
                      OpVol: Option[Int],
                      // 4 caracteres como máximo.
                      unit: String,
