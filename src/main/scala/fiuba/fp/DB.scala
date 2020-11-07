@@ -4,7 +4,7 @@ import java.text.{DateFormat, SimpleDateFormat}
 import java.time.LocalDateTime
 import java.util.Calendar
 
-import cats.effect.{ IO}
+import cats.effect.{IO}
 import doobie.Transactor
 import doobie.implicits._
 import doobie.implicits.javasql._
@@ -43,7 +43,7 @@ case class DB(transactor: Transactor.Aux[IO, Unit]) {
     val date = format.format(Calendar.getInstance.getTime)
 
     e match {
-      case (Left(throwable)) => f"[$date] Error inserting row: ${throwable.getMessage}\n"
+      case (Left(throwable)) => f"[$date] Error inserting row: ${throwable}\n"
       case _ => ""
     }
   }
