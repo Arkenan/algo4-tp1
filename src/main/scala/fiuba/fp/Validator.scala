@@ -26,7 +26,7 @@ object Validator {
     LocalDateTime.parse(s.replace(".","").toUpperCase, formatter)
   }
 
-  def tryToInt(s: String) : Option[Int] = Try(s.toInt).toOption
+  def tryToInt(s: String) : Option[Int] = s.toIntOption
 
-  def tryToDouble(s: String) : Option[Double] = Try(s.toDouble).toOption
+  def tryToDouble(s: String) : Option[Double] = s.toDoubleOption
 }
