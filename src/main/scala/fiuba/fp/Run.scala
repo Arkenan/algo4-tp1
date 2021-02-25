@@ -1,20 +1,19 @@
 package fiuba.fp
 
-import models.DataSetRow
-
 import java.nio.file.{Paths, StandardOpenOption}
 
+import cats.effect.{IO, _}
 import doobie._
-import cats.effect.IO
+import fiuba.fp.models.DataSetRow
 import fs2.{Stream, io, text}
 
 import scala.concurrent.ExecutionContext
-import cats.effect._
-import scala.io.Source
+
 object Run extends App {
 
     if (args.length == 0)
-        print("File path is needed")
+        sys.exit()
+
     val filename = args(0)
 
     implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
@@ -26,6 +25,7 @@ object Run extends App {
         "fiuba","password")
 
     val db = DB(transactor)
+    val logger = Logger()
 
     val stream: Stream[IO, Unit] = Stream.resource(Blocker[IO]).flatMap { blocker =>
         io.file
@@ -34,7 +34,7 @@ object Run extends App {
           .through(text.lines)
           .map(DataSetRow.convertToDataSetRow)
           .evalMap(r => db.putInDb(r))
-          .map(db.toOutputLine)
+          .map(logger.toOutputLine)
           .through(text.utf8Encode)
           .through(io.file.writeAll(
             Paths.get("log.txt"), blocker, List(StandardOpenOption.APPEND, StandardOpenOption.CREATE)))

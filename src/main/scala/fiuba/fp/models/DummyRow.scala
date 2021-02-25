@@ -1,6 +1,5 @@
 package fiuba.fp.models
 
-import fiuba.fp.Validator
 
 case class DummyRow (
                  id: String,
