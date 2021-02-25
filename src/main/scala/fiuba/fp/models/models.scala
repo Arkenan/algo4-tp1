@@ -30,7 +30,7 @@ object DataSetRow {
    def convertToDataSetRow(line: String): Either[Throwable, DataSetRow] ={
       line match {
           case s"${id},${date},${open},${high},${low},${last},${close},${diff},${curr},${oVol},${oDiff},${opVol},${unit},${dollarBN},${dollarItau},${wDiff}" => {
-            Validator.validate(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol, unit, dollarBN, dollarItau, wDiff)
+            Validator.validate(List(id, date, open, high, low, last, close, diff, curr, oVol, oDiff,opVol, unit, dollarBN, dollarItau, wDiff))
           }
           case _ => Left(new SizeNotMatchException("No hay campos suficientes para parsear la fila: " + line))
     }
