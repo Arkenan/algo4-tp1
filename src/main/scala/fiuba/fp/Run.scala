@@ -1,14 +1,13 @@
 package fiuba.fp
 
-import models.{DataSetRow}
 import java.nio.file.{Paths, StandardOpenOption}
 
+import cats.effect.{IO, _}
 import doobie._
-import cats.effect.IO
+import fiuba.fp.models.DataSetRow
 import fs2.{Stream, io, text}
 
 import scala.concurrent.ExecutionContext
-import cats.effect._
 
 object Run extends App {
 
